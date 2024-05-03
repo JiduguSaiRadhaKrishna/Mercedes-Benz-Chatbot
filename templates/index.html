@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercedes Benz Chatbot</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <style>
+        body {
+            background-image: url('https://www.hdwallpaper.nu/wp-content/uploads/2015/12/Mercedes_Logo_8.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            padding-top: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+            z-index: -1;
+        }
+
+        #chat-container {
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: auto;
+            z-index: 1;
+        }
+
+        #chat-box {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        #bot-message {
+            font-style: italic;
+        }
+
+        select, button {
+            color: black;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        /* Default message styles */
+        .message {
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        /* User message styles */
+        .user-message {
+            /* White background and black text color */
+            background-color: #ffffff;
+            color: black;
+        }
+
+        /* Bot message styles */
+        .bot-message {
+            /* White background and black text color */
+            background-color: #ffffff;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay"></div>
+    <div class="container-fluid mt-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-12">
+                <div id="chat-container">
+                    <h1 class="text-center mb-4">Welcome to Mercedes Benz Chatbot</h1>
+                    <div id="chat-box">
+                        <p id="bot-message" class="text-center">Hello, I am from Mercedes Benz Company. You can ask me questions about Mercedes Benz.</p>
+                    </div>
+                    <div class="input-group">
+                        <select id="question-dropdown" class="custom-select">
+                            <option value="">Select a question...</option>
+                            <option value="1">What are the origins of Mercedes-Benz and when was it established?</option>
+                            <option value="2">Who was Emil Jellinek-Mercedes and what role did he play in Mercedes-Benz's early history?</option>
+                            <option value="3">How did Mercedes-Benz evolve during the Nazi period in terms of production and usage?</option>
+                            <option value="4">Why did Daimler AG spin off Mercedes-Benz into a separate subsidiary in November 2019?</option>
+                            <option value="5">What was the significance of the 1955 Mercedes-Benz SLR sale in May 2022 and how were the proceeds used?</option>
+                            <option value="6">How has Mercedes-Benz expanded in China, focusing on electric vehicle partnerships?</option>
+                            <option value="7">What is the importance of Mercedes-Maybach within Mercedes-Benz, especially post-2012?</option>
+                            <option value="8">Describe Mercedes-Benz's operations in Vietnam, including partnerships, assembly processes, and recent investments.</option>
+                            <option value="9">How did Mercedes-Benz's quality rankings change in J.D. Power surveys from the late 1990s to early 2000s?</option>
+                            <option value="10">What notable awards has Mercedes-Benz received for quality and reliability, particularly from J.D. Power and other studies?</option>
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <script>
+        function sendMessage() {
+            var dropdown = document.getElementById("question-dropdown");
+            var selectedQuestion = dropdown.value;
+            var chatBox = document.getElementById("chat-box");
+
+            if (selectedQuestion) {
+                var questionText = dropdown.options[dropdown.selectedIndex].text;
+                var userMessage = '<p class="message user-message"><strong>You:</strong> ' + questionText + '</p>';
+                chatBox.innerHTML += userMessage;
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var responseJson = JSON.parse(this.responseText);
+                        var botMessage = '<p class="message bot-message"><strong>Mercedes Benz:</strong> ' + responseJson.response + '</p>';
+                        chatBox.innerHTML += botMessage;
+                    }
+                };
+
+                // Send selectedQuestion to Flask backend
+                xhttp.open("POST", "/process", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send("user_input=" + encodeURIComponent(questionText));
+            }
+
+            dropdown.selectedIndex = 0; // Reset dropdown to default option
+        }
+    </script>
+</body>
+</html>
